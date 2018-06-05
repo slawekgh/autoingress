@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autoingress
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: autoingress-serviceaccount
+  namespace: autoingress
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: autoingress-clusterrole
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - list
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+      - patch 
+      - delete
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: autoingress-clusterrole-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: autoingress-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: autoingress-serviceaccount
+    namespace: autoingress
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: autoingress-configuration
+  namespace: autoingress
+  labels:
+    app: autoingress
+data:
+  INGRESSHOST: www.mysite.com
+  INGRESSNAME: my-ingress
+  INGRESSNAMESPACE: default
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: autoingress
+  namespace: autoingress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: autoingress
+    spec:
+      serviceAccountName: autoingress-serviceaccount
+      containers:
+      - image: gimboo/autoingress:1.0
+        name: autoingress
+        ports:
+        - containerPort: 80
+        env:
+        - name: INGRESSHOST
+          valueFrom:
+           configMapKeyRef:
+            name: autoingress-configuration
+            key: INGRESSHOST
+        - name: INGRESSNAME
+          valueFrom:
+           configMapKeyRef:
+            name: autoingress-configuration
+            key: INGRESSNAME
+        - name: INGRESSNAMESPACE
+          valueFrom:
+           configMapKeyRef:
+            name: autoingress-configuration
+            key: INGRESSNAMESPACE
+
+
+
