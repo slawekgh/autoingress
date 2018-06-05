@@ -18,17 +18,17 @@ deployment.extensions "autoingress" created
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    run: service1
-    auto_ingress: 'sericeName_serviceUrlPath_servicePort'
-  name: serwice1
+ labels:
+  run: service1
+  auto_ingress: 'servicename_serviceurlpath_serviceport'
+ name: service1
 spec:
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 80
-  selector:
-    run: website
+ ports:
+ - port: 80
+   protocol: TCP
+   targetPort: 80
+ selector:
+  run: website
 
 # kubectl apply -f service1.yaml 
 service "serwis1" created
@@ -43,7 +43,8 @@ service "serwis1" created
       http:
         paths:
         - backend:
-            serviceName: sericename
+            serviceName: servicename
             servicePort: serviceport
           path: /serviceurlpath
+
 ```
