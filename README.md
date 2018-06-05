@@ -19,9 +19,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    run: serwis1
-    auto_ingress: 'serwis1_serwis1_80'
-  name: serwis1
+    run: service1
+    auto_ingress: 'sericeName_serviceUrlPath_servicePort'
+  name: serwice1
 spec:
   ports:
   - port: 80
@@ -32,4 +32,18 @@ spec:
 
 # kubectl apply -f service1.yaml 
 service "serwis1" created
+```
+
+# what is output in ingress config:
+
+```
+ spec:
+    rules:
+    - host: www.mysite.com
+      http:
+        paths:
+        - backend:
+            serviceName: sericename
+            servicePort: serviceport
+          path: /serviceurlpath
 ```
